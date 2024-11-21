@@ -57,6 +57,22 @@
             .map-container {
                 height: 250px;
             }
+
+            .blinking-icon {
+        animation: blinkRed 1s infinite;
+    }
+
+    @keyframes blinkRed {
+        0% {
+            filter: hue-rotate(0deg);
+        }
+        50% {
+            filter: hue-rotate(180deg); /* Apply red tint */
+        }
+        100% {
+            filter: hue-rotate(0deg);
+        }
+    }
         }
     </style>
 </head>
@@ -123,7 +139,7 @@
                 });
             }
 
-            function populateTableAndMap() {
+           function populateTableAndMap() {
     const bucketRef = db.ref('CIRCUITO');
 
     bucketRef.on('value', (snapshot) => {
@@ -156,17 +172,25 @@
             ]);
 
             if (latitud && longitud) {
-                const iconUrl = trabajo !== "sr" 
-                    ? "red_sparkling_icon.gif"  // Red sparkling icon
-                    : "default_marker_icon.png";  // Default icon
+                const markerElement = document.createElement('div');
+                markerElement.className = 'marker-icon';
+                markerElement.style.backgroundImage = `url('work.png')`;
+                markerElement.style.width = '32px';
+                markerElement.style.height = '32px';
+                markerElement.style.backgroundSize = 'contain';
+
+                // Add the blinking class if "trabajo" is not "sr"
+                if (trabajo !== "sr") {
+                    markerElement.classList.add('blinking-icon');
+                }
 
                 const marker = new google.maps.Marker({
                     position: { lat: parseFloat(latitud), lng: parseFloat(longitud) },
                     map: map,
                     title: `CIRCUITO - ${trabajo}`,
                     icon: {
-                        url: iconUrl,
-                        scaledSize: new google.maps.Size(32, 32),  // Adjust icon size
+                        url: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markerElement.outerHTML),
+                        scaledSize: new google.maps.Size(32, 32), // Adjust icon size as needed
                     },
                 });
 
