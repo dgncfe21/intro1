@@ -57,22 +57,16 @@
             .map-container {
                 height: 250px;
             }
+        }
 
-            .blinking-icon {
-        animation: blinkRed 1s infinite;
-    }
-
-    @keyframes blinkRed {
-        0% {
-            filter: hue-rotate(0deg);
-        }
-        50% {
-            filter: hue-rotate(180deg); /* Apply red tint */
-        }
-        100% {
-            filter: hue-rotate(0deg);
-        }
-    }
+        #layer-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -80,6 +74,13 @@
     <div class="container-fluid">
         <div class="login-container">
             <h1 class="heading">Admin Reportes</h1>
+            <div id="layer-controls">
+                <label><input type="checkbox" class="layer-toggle" data-layer="cto1"> CTO 1</label><br>
+                <label><input type="checkbox" class="layer-toggle" data-layer="cto2"> CTO 2</label><br>
+                <label><input type="checkbox" class="layer-toggle" data-layer="cto3"> CTO 3</label><br>
+                <label><input type="checkbox" class="layer-toggle" data-layer="cto4"> CTO 4</label><br>
+                <label><input type="checkbox" class="layer-toggle" data-layer="cto5"> CTO 5</label><br>
+            </div>
             <div class="row">
                 <div class="col-lg-12">
                     <div id="map" class="map-container"></div>
@@ -114,169 +115,168 @@
     <script>
         let map;
         const bucketMarkers = [];
+        const layers = {}; // Store polygon layers
 
-        window.onload = function () {
-            const firebaseConfig = {
-               apiKey: "AIzaSyAmUH1B1JDgQMHsVML3Fd4unZ8fzAQuq7s",
-  authDomain: "tsterapp-fcf1b.firebaseapp.com",
-  databaseURL: "https://tsterapp-fcf1b-default-rtdb.firebaseio.com",
-  projectId: "tsterapp-fcf1b",
-  storageBucket: "tsterapp-fcf1b.firebasestorage.app",
-  messagingSenderId: "27987269810",
-  appId: "1:27987269810:web:5da5ddb5d3e526739751ab",
-  measurementId: "G-XNS6DBLVEY"
-            };
+        // Polygon data
+        const polygons = {
+            cto1: [
+                { lat: 25.77205478, lng: -100.3160324 },
+                { lat: 25.77206375, lng: -100.3160224 },
+                { lat: 25.77209067, lng: -100.3143882 },
+                // Complete with all coordinates for cto1
+            ],
+            cto2: [
+                { lat: 25.7712079, lng: -100.314595 },
+                { lat: 25.7712393, lng: -100.3144356 },
+                { lat: 25.7712887, lng: -100.3142412 },
+                // Complete with all coordinates for cto2
+            ],
+            cto3: [
+                { lat: 25.77032, lng: -100.314012 },
+                { lat: 25.770441, lng: -100.313952 },
+                { lat: 25.770499, lng: -100.313339 },
+                // Complete with all coordinates for cto3
+            ],
+            cto4: [
+                { lat: 25.7720963, lng: -100.312129 },
+                { lat: 25.7721546, lng: -100.3117 },
+                { lat: 25.7719931, lng: -100.310963 },
+                // Complete with all coordinates for cto4
+            ],
+            cto5: [
+                { lat: 25.772011, lng: -100.310096 },
+                { lat: 25.77202, lng: -100.310056 },
+                { lat: 25.772056, lng: -100.30891 },
+                // Complete with all coordinates for cto5
+            ],
+        };
 
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-            const table = $('#circuitoTable').DataTable();
-            const infoWindow = new google.maps.InfoWindow();
+        function initMap() {
+            // Initialize map
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 25.772, lng: -100.314 },
+                zoom: 15,
+            });
 
-            function initMap() {
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: 25.7683104, lng: -100.3140697 },
-                    zoom: 12,
-                    styles: [
-             {
-                "featureType": "water",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#767779" }  // Dark gray-blue water
-                ]
-            },
-            {
-                "featureType": "landscape",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#767779" }  // Dark gray for landscape
-                ]
-            },
-            {
-                "featureType": "road",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#38414e" }  // Darker road colors
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#767779" }  // Darker color for points of interest
-                ]
-            },
-            {
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    { "color": "#ffffff" }  // White text for labels
-                ]
-            },
-            {
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    { "color": "#2f3948" }  // Darker text stroke
-                ]
-            }
-        ]
+            // Create polygon layers
+            for (const [key, coords] of Object.entries(polygons)) {
+                layers[key] = new google.maps.Polygon({
+                    paths: coords,
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,
                 });
             }
 
-      function populateTableAndMap() {
-    const bucketRef = db.ref('CIRCUITO');
-
-    bucketRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        table.clear();
-
-        bucketMarkers.forEach(marker => marker.setMap(null));
-        bucketMarkers.length = 0;
-
-        for (const key in data) {
-            const job = data[key];
-            const {
-                capacidad = "N/A",
-                estatus = "N/A",
-                lampara = "N/A",
-                latitud = null,
-                longitud = null,
-                rpu = "N/A",
-                trabajo = "N/A",
-            } = job;
-
-            table.row.add([
-                capacidad,
-                estatus,
-                lampara,
-                latitud || "Not available",
-                longitud || "Not available",
-                rpu,
-                trabajo,
-            ]);
-
-            if (latitud && longitud) {
-                // Icon logic
-                const icon = trabajo !== "sr"
-                    ? {
-                        url: "work_r.png", // Static icon for "sr"
-                        scaledSize: new google.maps.Size(32, 32),
+            // Add event listeners to checkboxes
+            const toggles = document.querySelectorAll(".layer-toggle");
+            toggles.forEach(toggle => {
+                toggle.addEventListener("change", function () {
+                    const layerKey = this.getAttribute("data-layer");
+                    if (this.checked) {
+                        layers[layerKey].setMap(map); // Turn layer on
+                    } else {
+                        layers[layerKey].setMap(null); // Turn layer off
                     }
-                    : {
-                        url: "lamp_yellow.png", // Static icon for "sr"
-                        scaledSize: new google.maps.Size(32, 32),
-                    };
-
-                const marker = new google.maps.Marker({
-                    position: { lat: parseFloat(latitud), lng: parseFloat(longitud) },
-                    map: map,
-                    title: `CIRCUITO - ${trabajo}`,
-                    icon: icon,
                 });
-
-                // Add click listener for InfoWindow
-                marker.addListener('click', () => {
-                    const content = `
-                        <div style="font-family: Arial, sans-serif; color: #333;">
-                            <h4 style="margin: 0; padding: 0 0 5px; font-size: 16px; color: #007BFF;">Circuito Details</h4>
-                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                                <tr>
-                                    <td style="font-weight: bold; padding: 4px;">Capacidad:</td>
-                                    <td style="padding: 4px;">${capacidad}</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: bold; padding: 4px;">Estatus:</td>
-                                    <td style="padding: 4px;">${estatus}</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: bold; padding: 4px;">Lámpara:</td>
-                                    <td style="padding: 4px;">${lampara}</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: bold; padding: 4px;">Trabajo:</td>
-                                    <td style="padding: 4px;">${trabajo}</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: bold; padding: 4px;">RPU:</td>
-                                    <td style="padding: 4px;">${rpu}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    `;
-                    infoWindow.setContent(content);
-                    infoWindow.open(map, marker);
-                });
-
-                bucketMarkers.push(marker);
-            }
+            });
         }
 
-        table.draw();
-    });
-}
+        function populateTableAndMap() {
+            const bucketRef = db.ref('CIRCUITO');
 
+bucketRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    table.clear();
 
+    bucketMarkers.forEach(marker => marker.setMap(null));
+    bucketMarkers.length = 0;
 
+    for (const key in data) {
+        const job = data[key];
+        const {
+            capacidad = "N/A",
+            estatus = "N/A",
+            lampara = "N/A",
+            latitud = null,
+            longitud = null,
+            rpu = "N/A",
+            trabajo = "N/A",
+        } = job;
 
+        table.row.add([
+            capacidad,
+            estatus,
+            lampara,
+            latitud || "Not available",
+            longitud || "Not available",
+            rpu,
+            trabajo,
+        ]);
 
+        if (latitud && longitud) {
+            // Icon logic
+            const icon = trabajo !== "sr"
+                ? {
+                    url: "work_r.png", // Static icon for "sr"
+                    scaledSize: new google.maps.Size(32, 32),
+                }
+                : {
+                    url: "lamp_yellow.png", // Static icon for "sr"
+                    scaledSize: new google.maps.Size(32, 32),
+                };
+
+            const marker = new google.maps.Marker({
+                position: { lat: parseFloat(latitud), lng: parseFloat(longitud) },
+                map: map,
+                title: `CIRCUITO - ${trabajo}`,
+                icon: icon,
+            });
+
+            // Add click listener for InfoWindow
+            marker.addListener('click', () => {
+                const content = `
+                    <div style="font-family: Arial, sans-serif; color: #333;">
+                        <h4 style="margin: 0; padding: 0 0 5px; font-size: 16px; color: #007BFF;">Circuito Details</h4>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <tr>
+                                <td style="font-weight: bold; padding: 4px;">Capacidad:</td>
+                                <td style="padding: 4px;">${capacidad}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding: 4px;">Estatus:</td>
+                                <td style="padding: 4px;">${estatus}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding: 4px;">Lámpara:</td>
+                                <td style="padding: 4px;">${lampara}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding: 4px;">Trabajo:</td>
+                                <td style="padding: 4px;">${trabajo}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding: 4px;">RPU:</td>
+                                <td style="padding: 4px;">${rpu}</td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+                infoWindow.setContent(content);
+                infoWindow.open(map, marker);
+            });
+
+            bucketMarkers.push(marker);
+        }
+    }
+
+    table.draw();
+});
+        }
+
+        window.onload = function () {
             initMap();
             populateTableAndMap();
         };
