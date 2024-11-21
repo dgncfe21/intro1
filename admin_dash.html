@@ -139,7 +139,7 @@
                 });
             }
 
-           function populateTableAndMap() {
+          function populateTableAndMap() {
     const bucketRef = db.ref('CIRCUITO');
 
     bucketRef.on('value', (snapshot) => {
@@ -172,26 +172,30 @@
             ]);
 
             if (latitud && longitud) {
-                const markerElement = document.createElement('div');
-                markerElement.className = 'marker-icon';
-                markerElement.style.backgroundImage = `url('work.png')`;
-                markerElement.style.width = '32px';
-                markerElement.style.height = '32px';
-                markerElement.style.backgroundSize = 'contain';
+                // Default icon for "sr"
+                const defaultIcon = {
+                    url: "work.png",
+                    scaledSize: new google.maps.Size(32, 32), // Adjust size as needed
+                };
 
-                // Add the blinking class if "trabajo" is not "sr"
-                if (trabajo !== "sr") {
-                    markerElement.classList.add('blinking-icon');
-                }
+                // Blinking red icon for other "trabajo" values
+                const blinkingIcon = {
+                    url: `data:image/svg+xml;charset=UTF-8,
+                        <svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
+                            <circle cx='32' cy='32' r='16' fill='red'>
+                                <animate attributeName='opacity' values='1;0;1' dur='1s' repeatCount='indefinite'/>
+                            </circle>
+                        </svg>`.replace(/\s+/g, " "), // Remove extra spaces for URL encoding
+                    scaledSize: new google.maps.Size(32, 32), // Adjust size as needed
+                };
+
+                const icon = trabajo !== "sr" ? blinkingIcon : defaultIcon;
 
                 const marker = new google.maps.Marker({
                     position: { lat: parseFloat(latitud), lng: parseFloat(longitud) },
                     map: map,
                     title: `CIRCUITO - ${trabajo}`,
-                    icon: {
-                        url: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markerElement.outerHTML),
-                        scaledSize: new google.maps.Size(32, 32), // Adjust icon size as needed
-                    },
+                    icon: icon,
                 });
 
                 marker.addListener('click', () => {
@@ -215,6 +219,7 @@
         table.draw();
     });
 }
+
 
 
             initMap();
