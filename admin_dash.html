@@ -175,16 +175,8 @@
                 // Icon logic
                 const icon = trabajo !== "sr"
                     ? {
-                        url: "work_r.png", 
-                            <svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
-                                <!-- Base icon -->
-                                <image href='work_r.png' x='0' y='0' width='64' height='64'/>
-                                <!-- Red blinking dot -->
-                                <circle cx='48' cy='16' r='8' fill='red'>
-                                    <animate attributeName='opacity' values='1;0;1' dur='1s' repeatCount='indefinite'/>
-                                </circle>
-                            </svg>`.replace(/\s+/g, " "), // Remove extra spaces for URL encoding
-                        scaledSize: new google.maps.Size(32, 32), // Adjust size as needed
+                        url: "work_r.png", // Static icon for "sr"
+                        scaledSize: new google.maps.Size(32, 32),
                     }
                     : {
                         url: "lamp.png", // Static icon for "sr"
