@@ -136,6 +136,48 @@
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: { lat: 25.7683104, lng: -100.3140697 },
                     zoom: 12,
+                    styles: [
+            {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [
+                    { "color": "#202c3e" }  // Dark gray-blue water
+                ]
+            },
+            {
+                "featureType": "landscape",
+                "elementType": "geometry",
+                "stylers": [
+                    { "color": "#2f3948" }  // Dark gray for landscape
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "geometry",
+                "stylers": [
+                    { "color": "#38414e" }  // Darker road colors
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "geometry",
+                "stylers": [
+                    { "color": "#283e4a" }  // Darker color for points of interest
+                ]
+            },
+            {
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    { "color": "#ffffff" }  // White text for labels
+                ]
+            },
+            {
+                "elementType": "labels.text.stroke",
+                "stylers": [
+                    { "color": "#2f3948" }  // Darker text stroke
+                ]
+            }
+        ]
                 });
             }
 
