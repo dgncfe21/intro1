@@ -27,15 +27,28 @@
         .map-container {
             height: 500px;
             margin-bottom: 20px;
+            max-width: 100%; /* Constrain width to 100% */
             background-color: #353535;
             border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .map-container {
+                height: 250px;
+            }
         }
 
         #layer-controls {
             position: absolute;
             top: 10px;
             left: 10px;
-            background-color: gray;
+            background-color: white;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -84,11 +97,50 @@
 
         const polygons = {
             cto1: [
-                {lat: 25.77205478, lng: -100.3160324},
-                {lat: 25.77206375, lng: -100.3160224},
-                {lat: 25.77209067, lng: -100.3143882},
-                {lat: 25.77199196, lng: -100.3143583},
-                {lat: 25.77205478, lng: -100.3160324}, // Closing point
+                {lat:25.77205478,lng:-100.3160324},
+{lat:25.77206375,lng:-100.3160224},
+{lat:25.77209067,lng:-100.3143882},
+{lat:25.77199196,lng:-100.3143583},
+{lat:25.77179455,lng:-100.3143583},
+{lat:25.77158815,lng:-100.3143384},
+{lat:25.77152534,lng:-100.3145277},
+{lat:25.77148047,lng:-100.3145875},
+{lat:25.77141766,lng:-100.3146672},
+{lat:25.77122024,lng:-100.3146373},
+{lat:25.77114845,lng:-100.3146573},
+{lat:25.77105871,lng:-100.3146075},
+{lat:25.77094206,lng:-100.3145078},
+{lat:25.77078951,lng:-100.3144381},
+{lat:25.77071772,lng:-100.314458},
+{lat:25.7706549,lng:-100.3144281},
+{lat:25.77061901,lng:-100.3142487},
+{lat:25.77043953,lng:-100.314179},
+{lat:25.77036774,lng:-100.3143284},
+{lat:25.77032288,lng:-100.3144381},
+{lat:25.77008956,lng:-100.3143185},
+{lat:25.7698383,lng:-100.3143185},
+{lat:25.76959601,lng:-100.314179},
+{lat:25.76944345,lng:-100.3141391},
+{lat:25.76944345,lng:-100.3143484},
+{lat:25.76943448,lng:-100.3145676},
+{lat:25.76936269,lng:-100.3148865},
+{lat:25.76936269,lng:-100.315026},
+{lat:25.76934474,lng:-100.3153548},
+{lat:25.7692909,lng:-100.3158431},
+{lat:25.76937166,lng:-100.3160025},
+{lat:25.76950627,lng:-100.3159128},
+{lat:25.7696319,lng:-100.315853},
+{lat:25.76978446,lng:-100.3159328},
+{lat:25.77008059,lng:-100.3159427},
+{lat:25.77028698,lng:-100.3160025},
+{lat:25.77043056,lng:-100.3160424},
+{lat:25.77050235,lng:-100.316152},
+{lat:25.7706549,lng:-100.3161819},
+{lat:25.77073566,lng:-100.3161121},
+{lat:25.77087027,lng:-100.3160822},
+{lat:25.77130997,lng:-100.3161918},
+{lat:25.77174071,lng:-100.3162815},
+{lat:25.77205478,lng:-100.3160324}, // Closing point
             ],
             cto2: [
                 {lat: 25.7712079, lng: -100.314595},
@@ -96,7 +148,6 @@
                 {lat: 25.7712887, lng: -100.3142412},
                 {lat: 25.7712079, lng: -100.314595}, // Closing point
             ],
-            // Add remaining polygons
         };
 
         function initMap() {
@@ -132,14 +183,14 @@
 
         function populateTableAndMap() {
             const firebaseConfig = {
-                apiKey: "AIzaSyCGuGpJEWo1_9gWwgSv3JO9s1051wDpY6E",
-    authDomain: "alumbradopubliconte.firebaseapp.com",
-    databaseURL: "https://alumbradopubliconte-default-rtdb.firebaseio.com",
-    projectId: "alumbradopubliconte",
-    storageBucket: "alumbradopubliconte.appspot.com",
-    messagingSenderId: "842157703635",
-    appId: "1:842157703635:web:64db480e6191f6c0326f26",
-    measurementId: "G-H4PG2MM8S5"
+                 apiKey: "AIzaSyAmUH1B1JDgQMHsVML3Fd4unZ8fzAQuq7s",
+  authDomain: "tsterapp-fcf1b.firebaseapp.com",
+  databaseURL: "https://tsterapp-fcf1b-default-rtdb.firebaseio.com",
+  projectId: "tsterapp-fcf1b",
+  storageBucket: "tsterapp-fcf1b.firebasestorage.app",
+  messagingSenderId: "27987269810",
+  appId: "1:27987269810:web:5da5ddb5d3e526739751ab",
+  measurementId: "G-XNS6DBLVEY"
             };
 
             firebase.initializeApp(firebaseConfig);
@@ -202,4 +253,5 @@
     </script>
 </body>
 </html>
+
 
