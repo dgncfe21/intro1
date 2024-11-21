@@ -346,8 +346,7 @@
             ],
         };
 
-        function initMap() {
-            // Initialize map
+       function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: 25.772, lng: -100.314 },
                 zoom: 15,
@@ -366,8 +365,7 @@
             }
 
             // Add event listeners to checkboxes
-            const toggles = document.querySelectorAll(".layer-toggle");
-            toggles.forEach(toggle => {
+            document.querySelectorAll(".layer-toggle").forEach(toggle => {
                 toggle.addEventListener("change", function () {
                     const layerKey = this.getAttribute("data-layer");
                     if (this.checked) {
@@ -378,7 +376,6 @@
                 });
             });
         }
-
         function populateTableAndMap() {
             const bucketRef = db.ref('CIRCUITO');
 
