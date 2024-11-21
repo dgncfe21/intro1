@@ -139,7 +139,7 @@
                 });
             }
 
-          function populateTableAndMap() {
+         function populateTableAndMap() {
     const bucketRef = db.ref('CIRCUITO');
 
     bucketRef.on('value', (snapshot) => {
@@ -198,14 +198,33 @@
                     icon: icon,
                 });
 
+                // Add click listener for InfoWindow
                 marker.addListener('click', () => {
                     const content = `
-                        <div>
-                            <strong>Circuito</strong><br>
-                            <strong>Capacidad:</strong> ${capacidad}<br>
-                            <strong>Estatus:</strong> ${estatus}<br>
-                            <strong>Lámpara:</strong> ${lampara}<br>
-                            <strong>Trabajo:</strong> ${trabajo}
+                        <div style="font-family: Arial, sans-serif; color: #333;">
+                            <h4 style="margin: 0; padding: 0 0 5px; font-size: 16px; color: #007BFF;">Circuito Details</h4>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                <tr>
+                                    <td style="font-weight: bold; padding: 4px;">Capacidad:</td>
+                                    <td style="padding: 4px;">${capacidad}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; padding: 4px;">Estatus:</td>
+                                    <td style="padding: 4px;">${estatus}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; padding: 4px;">Lámpara:</td>
+                                    <td style="padding: 4px;">${lampara}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; padding: 4px;">Trabajo:</td>
+                                    <td style="padding: 4px;">${trabajo}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: bold; padding: 4px;">RPU:</td>
+                                    <td style="padding: 4px;">${rpu}</td>
+                                </tr>
+                            </table>
                         </div>
                     `;
                     infoWindow.setContent(content);
