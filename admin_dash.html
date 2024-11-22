@@ -387,17 +387,30 @@
 
             });
 
-            // Create polygon layers
-            for (const [key, coords] of Object.entries(polygons)) {
-                layers[key] = new google.maps.Polygon({
-                    paths: coords,
-                    strokeColor: "#FF0000",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#FF0000",
-                    fillOpacity: 0.35,
-                });
-            }
+            // Loop through each polygon
+    for (const [key, coords] of Object.entries(polygons)) {
+        const polygon = new google.maps.Polygon({
+            paths: coords,
+            strokeColor: colors[key],
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: colors[key],
+            fillOpacity: 0.35,
+        });
+
+        polygon.setMap(map);
+
+        // Add click event listener to show popup
+        polygon.addListener("click", (event) => {
+            const content = `<div style="font-family: Arial, sans-serif;">
+                <strong>${tags[key]}</strong>
+            </div>`;
+            infoWindow.setContent(content);
+            infoWindow.setPosition(event.latLng); // Set popup position
+            infoWindow.open(map);
+        });
+    }
+}
 
             // Add event listeners to checkboxes
             document.querySelectorAll(".layer-toggle").forEach(toggle => {
