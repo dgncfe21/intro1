@@ -357,7 +357,7 @@
                 elementType: "geometry",
                 stylers: [{ color: "#38414e" }],
             },
-        ], // End of styles array
+        ],
     });
 
     // Add polygons
@@ -384,20 +384,20 @@
             infoWindow.open(map);
         });
     }
-}
 
-            // Add event listeners to checkboxes
-            document.querySelectorAll(".layer-toggle").forEach(toggle => {
-                toggle.addEventListener("change", function () {
-                    const layerKey = this.getAttribute("data-layer");
-                    if (this.checked) {
-                        layers[layerKey].setMap(map); // Turn layer on
-                    } else {
-                        layers[layerKey].setMap(null); // Turn layer off
-                    }
-                });
-            });
-        }
+    // Add event listeners to checkboxes
+    document.querySelectorAll(".layer-toggle").forEach(toggle => {
+        toggle.addEventListener("change", function () {
+            const layerKey = this.getAttribute("data-layer");
+            if (this.checked) {
+                layers[layerKey].setMap(map); // Turn layer on
+            } else {
+                layers[layerKey].setMap(null); // Turn layer off
+            }
+        });
+    });
+} // Properly closed initMap
+
 
         function populateTableAndMap() {
             const firebaseConfig = {
