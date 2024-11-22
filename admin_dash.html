@@ -121,13 +121,12 @@
             <table id="circuitoTable" class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>Capacidad</th>
+                        <th>Rpu</th>
+                        <th>Lampara</th>
                         <th>Estatus</th>
-                        <th>Lámpara</th>
-                        <th>Latitud</th>
-                        <th>Longitud</th>
-                        <th>RPU</th>
-                        <th>Trabajo</th>
+                        <th>Capacidad</th>
+                        <th>Reporte</th>
+                        
                     </tr>
                 </thead>
             </table>
@@ -462,12 +461,10 @@ bucketRef.on('value', (snapshot) => {
         } = job;
 
         table.row.add([
-            capacidad,
-            estatus,
-            lampara,
-            latitud || "Not available",
-            longitud || "Not available",
             rpu,
+            lampara,
+            estatus,           
+            capacidad,
             trabajo,
         ]);
 
@@ -494,27 +491,27 @@ bucketRef.on('value', (snapshot) => {
             marker.addListener('click', () => {
                 const content = `
                     <div style="font-family: Arial, sans-serif; color: #333;">
-                        <h4 style="margin: 0; padding: 0 0 5px; font-size: 16px; color: #007BFF;">Circuito Details</h4>
+                        <h4 style="margin: 0; padding: 0 0 5px; font-size: 16px; color: #007BFF;">Deatlle-Lampara</h4>
                         <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                             <tr>
-                                <td style="font-weight: bold; padding: 4px;">Capacidad:</td>
-                                <td style="padding: 4px;">${capacidad}</td>
+                                <td style="font-weight: bold; padding: 4px;">Rpu:</td>
+                                <td style="padding: 4px;">${rpu}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding: 4px;">Lampara:</td>
+                                <td style="padding: 4px;">${lampara}</td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold; padding: 4px;">Estatus:</td>
                                 <td style="padding: 4px;">${estatus}</td>
                             </tr>
                             <tr>
-                                <td style="font-weight: bold; padding: 4px;">Lámpara:</td>
-                                <td style="padding: 4px;">${lampara}</td>
+                                <td style="font-weight: bold; padding: 4px;">Capacidad:</td>
+                                <td style="padding: 4px;">${capacidad}</td>
                             </tr>
                             <tr>
-                                <td style="font-weight: bold; padding: 4px;">Trabajo:</td>
+                                <td style="font-weight: bold; padding: 4px;">Reporte:</td>
                                 <td style="padding: 4px;">${trabajo}</td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: bold; padding: 4px;">RPU:</td>
-                                <td style="padding: 4px;">${rpu}</td>
                             </tr>
                         </table>
                     </div>
