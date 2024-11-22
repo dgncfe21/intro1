@@ -411,64 +411,177 @@
   measurementId: "G-XNS6DBLVEY"
             };
 
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-            const table = $('#circuitoTable').DataTable();
-            const infoWindow = new google.maps.InfoWindow();
+           <script>
+    let map;
+    const bucketMarkers = []; // Store all markers
+    const layers = {}; // Store polygon layers
 
-            db.ref('CIRCUITO').on('value', (snapshot) => {
-                const data = snapshot.val();
-                table.clear();
+    // Define polygon data
+    const polygons = {
+        cto1: [
+            { lat: 25.77205478, lng: -100.3160324 },
+            { lat: 25.77206375, lng: -100.3160224 },
+            { lat: 25.77209067, lng: -100.3143882 },
+        ],
+        cto2: [
+            { lat: 25.7712079, lng: -100.314595 },
+            { lat: 25.7712393, lng: -100.3144356 },
+            { lat: 25.7712887, lng: -100.3142412 },
+        ],
+    };
 
-                bucketMarkers.forEach(marker => marker.setMap(null));
-                bucketMarkers.length = 0;
+    // Define polygon colors and tags
+    const colors = {
+        cto1: "#FF0000", // Red
+        cto2: "#00FF00", // Green
+        cto3: "#0000FF", // Blue
+        cto4: "#FFFF00", // Yellow
+        cto5: "#FF00FF", // Magenta
+    };
 
-                for (const key in data) {
-                    const job = data[key];
-                    const { capacidad = "N/A", estatus = "N/A", lampara = "N/A", latitud, longitud, rpu = "N/A", trabajo = "N/A" } = job;
+    const tags = {
+        cto1: "CTO 1",
+        cto2: "CTO 2",
+        cto3: "CTO 3",
+        cto4: "CTO 4",
+        cto5: "CTO 5",
+    };
 
-                    table.row.add([capacidad, estatus, lampara, latitud || "Not available", longitud || "Not available", rpu, trabajo]);
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 25.772, lng: -100.314 },
+            zoom: 15,
+            styles: [
+                {
+                    featureType: "water",
+                    elementType: "geometry",
+                    stylers: [{ color: "#767779" }],
+                },
+                {
+                    featureType: "landscape",
+                    elementType: "geometry",
+                    stylers: [{ color: "#767779" }],
+                },
+                {
+                    featureType: "road",
+                    elementType: "geometry",
+                    stylers: [{ color: "#38414e" }],
+                },
+            ],
+        });
 
-                    if (latitud && longitud) {
-                        const icon = trabajo !== "sr"
-                            ? { url: "work_r.png", scaledSize: new google.maps.Size(32, 32) }
-                            : { url: "lamp_yellow.png", scaledSize: new google.maps.Size(32, 32) };
+        // Create polygon layers but do not add to the map initially
+        for (const [key, coords] of Object.entries(polygons)) {
+            layers[key] = new google.maps.Polygon({
+                paths: coords,
+                strokeColor: colors[key],
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: colors[key],
+                fillOpacity: 0.35,
+            });
 
-                        const marker = new google.maps.Marker({
-                            position: { lat: parseFloat(latitud), lng: parseFloat(longitud) },
-                            map: map,
-                            title: `CIRCUITO - ${trabajo}`,
-                            icon: icon,
-                        });
-
-                        marker.addListener('click', () => {
-                            const content = `
-                                <div>
-                                    <h4>Circuito Details</h4>
-                                    <p><strong>Capacidad:</strong> ${capacidad}</p>
-                                    <p><strong>Estatus:</strong> ${estatus}</p>
-                                    <p><strong>Lámpara:</strong> ${lampara}</p>
-                                    <p><strong>Trabajo:</strong> ${trabajo}</p>
-                                    <p><strong>RPU:</strong> ${rpu}</p>
-                                </div>
-                            `;
-                            infoWindow.setContent(content);
-                            infoWindow.open(map, marker);
-                        });
-
-                        bucketMarkers.push(marker);
-                    }
-                }
-
-                table.draw();
+            // Add click event to polygons
+            layers[key].addListener("click", (event) => {
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<div><strong>${tags[key]}</strong></div>`,
+                    position: event.latLng,
+                });
+                infoWindow.open(map);
             });
         }
 
-        window.onload = function () {
-            initMap();
-            populateTableAndMap();
+        // Add event listeners to checkboxes
+        document.querySelectorAll(".layer-toggle").forEach((toggle) => {
+            toggle.addEventListener("change", function () {
+                const layerKey = this.getAttribute("data-layer");
+                if (this.checked) {
+                    layers[layerKey].setMap(map); // Show layer
+                } else {
+                    layers[layerKey].setMap(null); // Hide layer
+                }
+            });
+        });
+
+        // Populate markers from Firebase
+        populateTableAndMap();
+    }
+
+    function populateTableAndMap() {
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
         };
-    </script>
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const table = $("#circuitoTable").DataTable();
+        const infoWindow = new google.maps.InfoWindow();
+
+        db.ref("CIRCUITO").on("value", (snapshot) => {
+            const data = snapshot.val();
+            table.clear();
+
+            bucketMarkers.forEach((marker) => marker.setMap(null));
+            bucketMarkers.length = 0;
+
+            for (const key in data) {
+                const job = data[key];
+                const {
+                    capacidad = "N/A",
+                    estatus = "N/A",
+                    lampara = "N/A",
+                    latitud,
+                    longitud,
+                    rpu = "N/A",
+                    trabajo = "N/A",
+                } = job;
+
+                table.row.add([capacidad, estatus, lampara, latitud || "N/A", longitud || "N/A", rpu, trabajo]);
+
+                if (latitud && longitud) {
+                    const icon = trabajo !== "sr"
+                        ? { url: "work_r.png", scaledSize: new google.maps.Size(32, 32) }
+                        : { url: "lamp_yellow.png", scaledSize: new google.maps.Size(32, 32) };
+
+                    const marker = new google.maps.Marker({
+                        position: { lat: parseFloat(latitud), lng: parseFloat(longitud) },
+                        map: map,
+                        title: `CIRCUITO - ${trabajo}`,
+                        icon: icon,
+                    });
+
+                    marker.addListener("click", () => {
+                        const content = `
+                            <div>
+                                <h4>Circuito Details</h4>
+                                <p><strong>Capacidad:</strong> ${capacidad}</p>
+                                <p><strong>Estatus:</strong> ${estatus}</p>
+                                <p><strong>Lámpara:</strong> ${lampara}</p>
+                                <p><strong>Trabajo:</strong> ${trabajo}</p>
+                                <p><strong>RPU:</strong> ${rpu}</p>
+                            </div>
+                        `;
+                        infoWindow.setContent(content);
+                        infoWindow.open(map, marker);
+                    });
+
+                    bucketMarkers.push(marker);
+                }
+            }
+
+            table.draw();
+        });
+    }
+
+    window.onload = initMap;
+</script>
+
 </body>
 </html>
 
