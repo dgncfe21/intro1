@@ -117,23 +117,6 @@
         const bucketMarkers = [];
         const layers = {}; // Store polygon layers
 
-        window.onload = function () {
-            const firebaseConfig = {
-               apiKey: "AIzaSyAmUH1B1JDgQMHsVML3Fd4unZ8fzAQuq7s",
-  authDomain: "tsterapp-fcf1b.firebaseapp.com",
-  databaseURL: "https://tsterapp-fcf1b-default-rtdb.firebaseio.com",
-  projectId: "tsterapp-fcf1b",
-  storageBucket: "tsterapp-fcf1b.firebasestorage.app",
-  messagingSenderId: "27987269810",
-  appId: "1:27987269810:web:5da5ddb5d3e526739751ab",
-  measurementId: "G-XNS6DBLVEY"
-            };
-
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-            const table = $('#circuitoTable').DataTable();
-            const infoWindow = new google.maps.InfoWindow();
-
         // Polygon data
         const polygons = {
             cto1: [
@@ -204,12 +187,13 @@
         function populateTableAndMap() {
             const bucketRef = db.ref('CIRCUITO');
 
-    bucketRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        table.clear();
+bucketRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    table.clear();
 
-        bucketMarkers.forEach(marker => marker.setMap(null));
-        bucketMarkers.length = 0;
+    bucketMarkers.forEach(marker => marker.setMap(null));
+    bucketMarkers.length = 0;
+
     for (const key in data) {
         const job = data[key];
         const {
@@ -296,12 +280,6 @@
             initMap();
             populateTableAndMap();
         };
-
-
-    window.onload = initMap;
-     </script>
-
-  </body>
+    </script>
+</body>
 </html>
-
-
