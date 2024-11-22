@@ -204,13 +204,12 @@
         function populateTableAndMap() {
             const bucketRef = db.ref('CIRCUITO');
 
-bucketRef.on('value', (snapshot) => {
-    const data = snapshot.val();
-    table.clear();
+    bucketRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        table.clear();
 
-    bucketMarkers.forEach(marker => marker.setMap(null));
-    bucketMarkers.length = 0;
-
+        bucketMarkers.forEach(marker => marker.setMap(null));
+        bucketMarkers.length = 0;
     for (const key in data) {
         const job = data[key];
         const {
